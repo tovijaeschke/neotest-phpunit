@@ -1,5 +1,16 @@
 # neotest-phpunit
 
+## Reason for fork
+
+Due to running tests within docker, the full path to the file accepted by phpunit was invalid. I have simply removed lua/neotest-phpunit/init.lua:85, as phpunit does not need it to run.
+
+For running within docker, use the following configuration
+```lua
+require("neotest-phpunit")({
+  phpunit_cmd = { "docker-compose", "exec", "fpm", "./vendor/bin/phpunit" },
+})
+```
+
 [![Tests](https://github.com/olimorris/neotest-phpunit/actions/workflows/ci.yml/badge.svg)](https://github.com/olimorris/neotest-phpunit/actions/workflows/ci.yml)
 
 This plugin provides a [PHPUnit](https://phpunit.de) adapter for the [Neotest](https://github.com/nvim-neotest/neotest) framework.

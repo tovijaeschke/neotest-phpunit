@@ -82,7 +82,6 @@ function NeotestAdapter.build_spec(args)
 
   local command = vim.tbl_flatten({
     config.get_phpunit_cmd(),
-    position.name ~= "tests" and position.path,
     "--log-junit=" .. results_path,
   })
 

@@ -12,4 +12,12 @@ M.get_filter_dirs = function()
   return { ".git", "node_modules" }
 end
 
+M.get_mapped_docker_dir = function()
+  return "/var/www"
+end
+
+M.get_append_to_cwd = function()
+  return "api/"
+end
+
 return M

@@ -108,6 +108,24 @@ function NeotestAdapter.build_spec(args)
   }
 end
 
+local _replace_docker_mapped_dir = function (results, current_dir)
+    local docker_dir = config.get_mapped_docker_dir()
+    local append_to_cwd = config.get_append_to_cwd()
+
+    -- Early return if no docker dir is set
+    if docker_dir == false then
+        return results
+    end
+
+    local new_results = {}
+    for key, result in pairs(results) do
+        local new_key = string.gsub(key, docker_dir, current_dir .. append_to_cwd)
+        new_results[new_key] = result
+    end
+
+    return new_results
+end
+
 ---@async
 ---@param spec neotest.RunSpec
 ---@param result neotest.StrategyResult
@@ -115,6 +133,10 @@ end
 ---@return neotest.Result[]
 function NeotestAdapter.results(test, result, tree)
   local output_file = test.context.results_path
+
+  local current_dir = tree:root():data().path
+
+  os.execute('docker compose cp fpm:' .. output_file .. ' ' .. output_file)
 
   local ok, data = pcall(lib.files.read, output_file)
   if not ok then
@@ -134,7 +156,14 @@ function NeotestAdapter.results(test, result, tree)
     return {}
   end
 
-  return results
+  local ok, docker_results = pcall(_replace_docker_mapped_dir, results, current_dir)
+  if not ok then
+    print("error:", docker_results)
+    logger.error("Could not replace docker mapped directory", output_file)
+    return {}
+  end
+
+  return docker_results
 end
 
 local is_callable = function(obj)

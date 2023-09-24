@@ -17,7 +17,7 @@ M.get_mapped_docker_dir = function()
 end
 
 M.get_append_to_cwd = function()
-  return "api/"
+  return "/api"
 end
 
 return M
